@@ -1,0 +1,48 @@
+{
+  "name": "r2-autoindex",
+  "version": "0.0.1",
+  "description": "Nginx-style autoindex directory listings for Cloudflare Workers and R2",
+  "keywords": [
+    "autoindex",
+    "cloudflare",
+    "directory-listing",
+    "r2",
+    "workers"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "oxlint . --type-aware --type-check --deny-warnings",
+    "lint": "oxlint . --deny-warnings",
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt . --check",
+    "check": "npm run typecheck && npm run lint && npm run fmt:check",
+    "build": "tsc --emitDeclarationOnly false --outDir dist --rootDir src",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "mime-types": "^3.0.2",
+    "path-to-regexp": "^8.4.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260503.0",
+    "@types/mime-types": "^3.0.1",
+    "oxfmt": "^0.47.0",
+    "oxlint": "^1.62.0",
+    "oxlint-tsgolint": "^0.22.1",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.87.0"
+  }
+}

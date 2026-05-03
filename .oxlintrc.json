@@ -1,0 +1,10 @@
+{
+  "ignorePatterns": [".direnv/**", "dist/**", "examples/**", "node_modules/**"],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  },
+  "rules": {
+    "no-console": "off"
+  }
+}
