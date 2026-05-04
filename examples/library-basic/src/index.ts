@@ -12,7 +12,7 @@ export default createAutoIndexWorker<Env>({
 
   headers: async () => [
     {
-      source: "/:path*",
+      source: "/{/*path}",
       headers: [{ key: "x-content-type-options", value: "nosniff" }],
     },
   ],
@@ -20,13 +20,13 @@ export default createAutoIndexWorker<Env>({
   rewrites: async () => ({
     fallback: [
       // Example: serve /_fallback.mp3 for missing top-level non-underscore .mp3 files.
-      { source: "/:file((?!_)[^/]+)\\.mp3", destination: "/_fallback.mp3" },
+      { source: /^\/(?!_)[^/]+\.mp3$/, destination: "/_fallback.mp3" },
     ],
   }),
 
   auth: [
     {
-      source: "/private/:path*",
+      source: "/private{/*path}",
       realm: "restricted",
       verify: ({ username, password, env }) =>
         username === "admin" && password === env.PRIVATE_PASSWORD,

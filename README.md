@@ -17,7 +17,7 @@ Early, but functional. The npm package is not published yet.
 - R2 event notification invalidation via Cloudflare Queues.
 - Object serving with MIME type inference.
 - HTTP byte-range support for media files.
-- Next-style `headers`, `redirects`, and `rewrites` using `path-to-regexp` patterns.
+- `headers`, `redirects`, and `rewrites` using `path-to-regexp` v8 patterns or native `RegExp` sources.
 - Directory index files via `index.html` / `index.htm` or custom names.
 - Basic Auth route rules with user-provided verification.
 - Auth-protected responses default to `Cache-Control: private, no-store`.
@@ -40,18 +40,18 @@ export default createAutoIndexWorker<Env>({
 
   headers: async () => [
     {
-      source: "/:path*",
+      source: "/{/*path}",
       headers: [{ key: "x-content-type-options", value: "nosniff" }],
     },
   ],
 
   rewrites: async () => ({
-    fallback: [{ source: "/:file((?!_)[^/]+)\\.mp3", destination: "/_fallback.mp3" }],
+    fallback: [{ source: /^\/(?!_)[^/]+\.mp3$/, destination: "/_fallback.mp3" }],
   }),
 
   auth: [
     {
-      source: "/private/:path*",
+      source: "/private{/*path}",
       realm: "restricted",
       verify: ({ username, password, env }) =>
         username === "admin" && password === env.PRIVATE_PASSWORD,

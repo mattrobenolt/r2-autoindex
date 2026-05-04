@@ -8,6 +8,7 @@ import type {
   RedirectRule,
   RewriteConfig,
   RewriteRule,
+  RouteSource,
 } from "./types";
 
 type R2Event = {
@@ -26,11 +27,12 @@ type DirectoryEntry = {
 };
 
 type NormalizedPath = { key: string; pathname: string; directory: boolean };
-type CompiledRule<T> = T & { matcher: ReturnType<typeof match> };
+type MatchResult = { params: Record<string, string | string[]> };
+type CompiledRule<T> = T & { matcher: (pathname: string) => false | MatchResult };
 type RouteConfig<Env = unknown> = {
   indexes: string[];
-  hidden: CompiledRule<{ source: string }>[];
-  denied: CompiledRule<{ source: string }>[];
+  hidden: CompiledRule<{ source: RouteSource }>[];
+  denied: CompiledRule<{ source: RouteSource }>[];
   auth: CompiledRule<AuthRule<Env>>[];
   headers: CompiledRule<HeaderRule>[];
   redirects: CompiledRule<RedirectRule>[];
@@ -521,21 +523,31 @@ function normalizeRewrites(
   };
 }
 
-function compilePatternList(patterns: string[]): CompiledRule<{ source: string }>[] {
+function compilePatternList(patterns: RouteSource[]): CompiledRule<{ source: RouteSource }>[] {
   return compileRules(patterns.map((source) => ({ source })));
 }
 
-function compileRules<T extends { source: string }>(rules: T[]): CompiledRule<T>[] {
-  return rules.map((rule) => ({
-    ...rule,
-    matcher: match(rule.source, { decode: decodeURIComponent }),
-  }));
+function compileRules<T extends { source: RouteSource }>(rules: T[]): CompiledRule<T>[] {
+  return rules.map((rule) => ({ ...rule, matcher: compileMatcher(rule.source) }));
 }
 
-function firstMatch<T extends { source: string }>(
+function compileMatcher(source: RouteSource): (pathname: string) => false | MatchResult {
+  if (source instanceof RegExp) {
+    return (pathname) => {
+      source.lastIndex = 0;
+      const result = source.exec(pathname);
+      if (!result) return false;
+      return { params: result.groups ?? {} };
+    };
+  }
+
+  return match(source, { decode: decodeURIComponent });
+}
+
+function firstMatch<T extends { source: RouteSource }>(
   rules: CompiledRule<T>[],
   pathname: string,
-): { rule: T; params: object } | undefined {
+): { rule: T; params: Record<string, string | string[]> } | undefined {
   for (const rule of rules) {
     const result = rule.matcher(pathname);
     if (result) return { rule, params: result.params };
@@ -543,20 +555,24 @@ function firstMatch<T extends { source: string }>(
   return undefined;
 }
 
-function matchesAny(rules: CompiledRule<{ source: string }>[], pathname: string): boolean {
+function matchesAny(rules: CompiledRule<{ source: RouteSource }>[], pathname: string): boolean {
   return firstMatch(rules, pathname) !== undefined;
 }
 
-function rewritePath(path: NormalizedPath, destination: string, params: object): NormalizedPath {
+function rewritePath(
+  path: NormalizedPath,
+  destination: string,
+  params: Record<string, string | string[]>,
+): NormalizedPath {
   const pathname = applyDestination(destination, params);
   return { key: pathname.slice(1), pathname, directory: pathname.endsWith("/") };
 }
 
-function applyDestination(destination: string, params: object): string {
+function applyDestination(destination: string, params: Record<string, string | string[]>): string {
   return compile(destination, { encode: encodeURIComponent })(params);
 }
 
-function interpolate(value: string, params: object): string {
+function interpolate(value: string, params: Record<string, string | string[]>): string {
   return value.replace(/:([A-Za-z0-9_]+)\*?/g, (_, name: string) => {
     const param = (params as Record<string, string | string[]>)[name];
     return Array.isArray(param) ? param.join("/") : (param ?? "");

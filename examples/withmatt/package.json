@@ -7,7 +7,7 @@
     "dev": "wrangler dev"
   },
   "dependencies": {
-    "r2-autoindex": "0.0.3"
+    "r2-autoindex": "file:../.."
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260503.0",

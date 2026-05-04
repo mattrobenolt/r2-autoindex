@@ -1,22 +1,24 @@
+export type RouteSource = string | RegExp;
+
 export type HeaderRule = {
-  source: string;
+  source: RouteSource;
   headers: Array<{ key: string; value: string }>;
 };
 
 export type RedirectRule = {
-  source: string;
+  source: RouteSource;
   destination: string;
   permanent?: boolean;
   statusCode?: 301 | 302 | 303 | 307 | 308;
 };
 
 export type RewriteRule = {
-  source: string;
+  source: RouteSource;
   destination: string;
 };
 
 export type AuthRule<Env = unknown> = {
-  source: string;
+  source: RouteSource;
   realm?: string;
   cache?: "no-store" | "allow";
   verify: (input: {
