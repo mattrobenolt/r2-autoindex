@@ -569,6 +569,12 @@ function rewritePath(
 }
 
 function applyDestination(destination: string, params: Record<string, string | string[]>): string {
+  if (/^[a-z][a-z0-9+.-]*:/i.test(destination)) {
+    const url = new URL(destination);
+    url.pathname = compile(url.pathname, { encode: encodeURIComponent })(params);
+    return url.toString();
+  }
+
   return compile(destination, { encode: encodeURIComponent })(params);
 }
 
