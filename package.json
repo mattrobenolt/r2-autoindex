@@ -1,6 +1,6 @@
 {
   "name": "r2-autoindex",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Nginx-style autoindex directory listings for Cloudflare Workers and R2",
   "keywords": [
     "autoindex",

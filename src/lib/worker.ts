@@ -122,8 +122,8 @@ async function routeRequest<Env>(
 
   const redirect = firstMatch(routes.redirects, path.pathname);
   if (redirect) {
-    const url = new URL(request.url);
-    url.pathname = applyDestination(redirect.rule.destination, redirect.params);
+    const location = applyDestination(redirect.rule.destination, redirect.params);
+    const url = new URL(location, request.url);
     const status = redirect.rule.statusCode ?? (redirect.rule.permanent ? 308 : 307);
     return Response.redirect(url.toString(), status);
   }
