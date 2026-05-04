@@ -38,6 +38,17 @@ export default createAutoIndexWorker<Env>({
 
   indexes: ["index.html", "index.htm"],
 
+  errors: {
+    404: {
+      body: "<!doctype html><title>Not Found</title><h1>Not Found</h1>",
+      contentType: "text/html; charset=utf-8",
+    },
+    500: {
+      body: "<!doctype html><title>Error</title><h1>Internal Server Error</h1>",
+      contentType: "text/html; charset=utf-8",
+    },
+  },
+
   headers: async () => [
     {
       source: "/{/*path}",

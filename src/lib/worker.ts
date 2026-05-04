@@ -70,20 +70,28 @@ export function createAutoIndexWorker<Env = { BUCKET: R2Bucket }>(
       const bucket = getBucket(env, config);
       const routes = await routeConfig();
       const auth = firstMatch(routes.auth, path.pathname);
-      const response = await routeRequest(
-        request,
-        env,
-        bucket,
-        internalPrefix,
-        routes,
-        path,
-        auth?.rule,
-      );
-      const withErrorPage = applyErrorPage(response, request.method, routes.errors);
-      const withHeaders = applyHeaders(withErrorPage, routes.headers, path.pathname);
-      return auth?.rule.cache === "allow"
-        ? withHeaders
-        : applyNoStore(withHeaders, auth !== undefined);
+
+      try {
+        const response = await routeRequest(
+          request,
+          env,
+          bucket,
+          internalPrefix,
+          routes,
+          path,
+          auth?.rule,
+        );
+        return finalizeResponse(response, request.method, routes, path.pathname, auth?.rule);
+      } catch (error) {
+        console.error(error);
+        return finalizeResponse(
+          new Response("Internal Server Error", { status: 500 }),
+          request.method,
+          routes,
+          path.pathname,
+          auth?.rule,
+        );
+      }
     },
 
     async queue(batch, env): Promise<void> {
@@ -417,6 +425,18 @@ function applyErrorPage(
     statusText: response.statusText,
     headers,
   });
+}
+
+function finalizeResponse<Env>(
+  response: Response,
+  method: string,
+  routes: RouteConfig<Env>,
+  pathname: string,
+  auth?: AuthRule<Env>,
+): Response {
+  const withErrorPage = applyErrorPage(response, method, routes.errors);
+  const withHeaders = applyHeaders(withErrorPage, routes.headers, pathname);
+  return auth?.cache === "allow" ? withHeaders : applyNoStore(withHeaders, auth !== undefined);
 }
 
 function applyHeaders(
