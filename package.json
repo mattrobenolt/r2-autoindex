@@ -1,6 +1,6 @@
 {
   "name": "r2-autoindex",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Nginx-style autoindex directory listings for Cloudflare Workers and R2",
   "keywords": [
     "autoindex",
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "mime-types": "^3.0.2",
-    "path-to-regexp": "^8.4.2"
+    "path-to-regexp": "^6.3.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260503.0",
