@@ -1,10 +1,6 @@
 # r2-serve withmatt example
 
-This is the live kitchen-sink deployment for `r2-serve`:
-
-```text
-https://r2-serve-example.withmatt.com/
-```
+This is the live kitchen-sink deployment for `r2-serve`: [r2-serve.withmatt.com](https://r2-serve.withmatt.com/).
 
 It intentionally uses the published npm package instead of the local source tree, so it exercises the same installation path a user would use.
 
@@ -35,10 +31,10 @@ password: r2-serve
 This example uses these resources:
 
 ```text
-Worker: r2-serve-example
-Bucket: r2-serve-example-withmatt-com
-Queue:  r2-serve-example-events
-Domain: r2-serve-example.withmatt.com
+Worker: r2-serve
+Bucket: r2-serve-withmatt-com
+Queue:  r2-serve-events
+Domain: r2-serve.withmatt.com
 ```
 
 The Worker deployment is handled by Wrangler from this directory. The bucket, queue, R2 event notifications, and Worker custom domain are managed in Matt's Cloudflare OpenTofu repo.
@@ -63,7 +59,7 @@ The public bucket contains small text/html/svg examples plus Big Buck Bunny from
 If reseeding manually, upload objects to:
 
 ```text
-r2-serve-example-withmatt-com
+r2-serve-withmatt-com
 ```
 
 R2 event notifications invalidate generated listings automatically after object changes.

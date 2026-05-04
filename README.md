@@ -162,11 +162,7 @@ If generated listings ever need a manual reset, delete the `.__autoindex__/` pre
 
 ## Examples
 
-The live kitchen-sink example is:
-
-```text
-https://r2-serve-example.withmatt.com/
-```
+The live kitchen-sink example is [r2-serve.withmatt.com](https://r2-serve.withmatt.com/).
 
 Its Worker project lives in `examples/withmatt` and installs the published `r2-serve` package. It demonstrates directory listings, custom index files, rewrites, redirects, hidden paths, Basic Auth, custom error pages, headers, and byte-range media serving.
 
