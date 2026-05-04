@@ -9,7 +9,15 @@
     "r2",
     "workers"
   ],
+  "homepage": "https://github.com/mattrobenolt/r2-autoindex#readme",
+  "bugs": {
+    "url": "https://github.com/mattrobenolt/r2-autoindex/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattrobenolt/r2-autoindex.git"
+  },
   "files": [
     "dist",
     "README.md",
