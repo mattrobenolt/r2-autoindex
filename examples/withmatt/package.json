@@ -1,5 +1,5 @@
 {
-  "name": "r2-autoindex-withmatt-example",
+  "name": "r2-serve-withmatt-example",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +7,7 @@
     "dev": "wrangler dev"
   },
   "dependencies": {
-    "r2-autoindex": "^0.0.6"
+    "r2-serve": "0.1.0-alpha.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260503.0",

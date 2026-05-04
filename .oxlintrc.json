@@ -1,5 +1,11 @@
 {
-  "ignorePatterns": [".direnv/**", "dist/**", "examples/**", "node_modules/**"],
+  "ignorePatterns": [
+    ".direnv/**",
+    "dist/**",
+    "examples/**",
+    "node_modules/**",
+    "terraform/worker.js"
+  ],
   "options": {
     "typeAware": true,
     "typeCheck": true

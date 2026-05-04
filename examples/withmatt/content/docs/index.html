@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>r2-serve docs</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        line-height: 1.5;
+        max-width: 860px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      pre {
+        overflow-x: auto;
+        padding: 1rem;
+        border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+        border-radius: 8px;
+      }
+      a {
+        color: LinkText;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>r2-serve</h1>
+    <p>Nginx-style directory listings for Cloudflare Workers and R2.</p>
+
+    <p>
+      <a href="https://github.com/mattrobenolt/r2-serve">GitHub</a> ·
+      <a href="https://www.npmjs.com/package/r2-serve">npm</a> ·
+      <a href="/">live example bucket</a>
+    </p>
+
+    <h2>What this example shows</h2>
+    <ul>
+      <li>Generated directory listings cached in R2.</li>
+      <li>Directory index files: this page is served from <code>docs/index.html</code>.</li>
+      <li>
+        Fallback rewrites: <a href="/latest"><code>/latest</code></a> and
+        <a href="/downloads/example.txt"><code>/downloads/example.txt</code></a
+        >.
+      </li>
+      <li>
+        Basic Auth: <a href="/private/"><code>/private/</code></a> uses <code>demo:r2-serve</code>.
+      </li>
+      <li>Hidden paths: <code>/hidden/</code> exists in R2 but is not listed.</li>
+      <li>Byte-range media serving: <a href="/media/big-buck-bunny.mp4">Big Buck Bunny MP4</a>.</li>
+      <li>Custom 404/500 pages.</li>
+    </ul>
+
+    <h2>Minimal Worker</h2>
+    <pre><code>import { createAutoIndexWorker } from "r2-serve";
+
+export interface Env {
+  BUCKET: R2Bucket;
+}
+
+export default createAutoIndexWorker&lt;Env&gt;({
+  bucket: (env) =&gt; env.BUCKET,
+  indexes: ["index.html", "index.htm"],
+});</code></pre>
+
+    <h2>Cloudflare resources</h2>
+    <p>
+      A deployment needs an R2 bucket, a Queue, R2 event notification rules for object
+      creates/deletes, and a Worker with the R2 binding plus Queue consumer.
+    </p>
+
+    <p>
+      The Terraform module in the repository can manage the whole standalone deployment using the
+      committed Worker bundle.
+    </p>
+  </body>
+</html>

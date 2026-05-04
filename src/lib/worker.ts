@@ -589,6 +589,7 @@ function rewritePath(
 }
 
 function applyDestination(destination: string, params: Record<string, string | string[]>): string {
+  params = normalizeParams(params);
   if (/^[a-z][a-z0-9+.-]*:/i.test(destination)) {
     const url = new URL(destination);
     url.pathname = compile(url.pathname, { encode: encodeURIComponent })(params);
@@ -596,6 +597,17 @@ function applyDestination(destination: string, params: Record<string, string | s
   }
 
   return compile(destination, { encode: encodeURIComponent })(params);
+}
+
+function normalizeParams(
+  params: Record<string, string | string[]>,
+): Record<string, string | string[]> {
+  return Object.fromEntries(
+    Object.entries(params).map(([key, value]) => [
+      key,
+      Array.isArray(value) && value.length === 1 ? value[0] : value,
+    ]),
+  );
 }
 
 function interpolate(value: string, params: Record<string, string | string[]>): string {

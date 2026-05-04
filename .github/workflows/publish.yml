@@ -36,7 +36,15 @@ jobs:
         run: npm run build
 
       - name: Publish
-        run: npm publish --access public --provenance
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [[ "$version" == *-* ]]; then
+            tag=${version#*-}
+            tag=${tag%%.*}
+            npm publish --access public --provenance --tag "$tag"
+          else
+            npm publish --access public --provenance
+          fi
 
       - name: Create GitHub Release
         env:

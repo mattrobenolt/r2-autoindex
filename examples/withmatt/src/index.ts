@@ -1,4 +1,4 @@
-import { createAutoIndexWorker } from "r2-autoindex";
+import { createAutoIndexWorker } from "r2-serve";
 
 export interface Env {
   BUCKET: R2Bucket;
@@ -38,7 +38,7 @@ export default createAutoIndexWorker<Env>({
   auth: [
     {
       source: "/private{/*path}",
-      realm: "r2-autoindex example",
+      realm: "r2-serve example",
       verify: ({ username, password, env }) =>
         username === "demo" && password === env.PRIVATE_PASSWORD,
     },
@@ -47,7 +47,7 @@ export default createAutoIndexWorker<Env>({
   redirects: async () => [
     {
       source: "/github",
-      destination: "https://github.com/mattrobenolt/r2-autoindex",
+      destination: "https://github.com/mattrobenolt/r2-serve",
       permanent: false,
     },
   ],

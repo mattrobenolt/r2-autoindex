@@ -1,7 +1,7 @@
 {
-  "name": "r2-autoindex",
-  "version": "0.0.7",
-  "description": "Nginx-style autoindex directory listings for Cloudflare Workers and R2",
+  "name": "r2-serve",
+  "version": "0.1.0-alpha.0",
+  "description": "Nginx-style static hosting for Cloudflare Workers and R2",
   "keywords": [
     "autoindex",
     "cloudflare",
@@ -9,14 +9,14 @@
     "r2",
     "workers"
   ],
-  "homepage": "https://github.com/mattrobenolt/r2-autoindex#readme",
+  "homepage": "https://github.com/mattrobenolt/r2-serve#readme",
   "bugs": {
-    "url": "https://github.com/mattrobenolt/r2-autoindex/issues"
+    "url": "https://github.com/mattrobenolt/r2-serve/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattrobenolt/r2-autoindex.git"
+    "url": "git+https://github.com/mattrobenolt/r2-serve.git"
   },
   "files": [
     "dist",
@@ -32,13 +32,15 @@
     }
   },
   "scripts": {
-    "typecheck": "oxlint . --type-aware --type-check --deny-warnings",
-    "lint": "oxlint . --deny-warnings",
+    "typecheck": "oxlint . --disable-nested-config --type-aware --type-check --deny-warnings",
+    "lint": "oxlint . --disable-nested-config --deny-warnings",
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt . --check",
     "check": "npm run typecheck && npm run lint && npm run fmt:check",
-    "build": "tsc --emitDeclarationOnly false --outDir dist --rootDir src",
-    "prepack": "npm run build"
+    "build": "npm run build:lib && npm run build:standalone",
+    "prepack": "npm run build:lib",
+    "build:standalone": "node scripts/build-standalone.cjs",
+    "build:lib": "tsc --emitDeclarationOnly false --outDir dist --rootDir src"
   },
   "dependencies": {
     "mime-types": "^3.0.2",
