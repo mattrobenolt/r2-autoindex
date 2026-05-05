@@ -1,6 +1,8 @@
 # r2-serve Terraform module
 
-Standalone Terraform/OpenTofu deployment for `r2-serve`.
+A standalone Terraform/OpenTofu deployment for `r2-serve`.
+
+This is the one-block path for turning an R2 bucket into a static file server.
 
 This module creates:
 
@@ -17,7 +19,7 @@ The Worker code is the committed `worker.js` bundle in this directory. It reads 
 
 ```hcl
 module "files" {
-  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0-alpha.0"
+  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0-alpha.1"
 
   account_id  = var.account_id
   zone_id     = cloudflare_zone.example_com.id

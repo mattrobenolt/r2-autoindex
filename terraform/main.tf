@@ -52,7 +52,7 @@ resource "cloudflare_queue_consumer" "worker" {
   }
 }
 
-resource "cloudflare_r2_bucket_event_notification" "autoindex" {
+resource "cloudflare_r2_bucket_event_notification" "listing_cache" {
   account_id   = var.account_id
   bucket_name  = cloudflare_r2_bucket.bucket.name
   jurisdiction = cloudflare_r2_bucket.bucket.jurisdiction
@@ -61,13 +61,13 @@ resource "cloudflare_r2_bucket_event_notification" "autoindex" {
   rules = [
     {
       actions     = ["PutObject", "CopyObject", "CompleteMultipartUpload"]
-      description = "Invalidate autoindex cache on object create/update"
+      description = "Invalidate directory listing cache on object create/update"
       prefix      = ""
       suffix      = ""
     },
     {
       actions     = ["DeleteObject", "LifecycleDeletion"]
-      description = "Invalidate autoindex cache on object delete"
+      description = "Invalidate directory listing cache on object delete"
       prefix      = ""
       suffix      = ""
     },

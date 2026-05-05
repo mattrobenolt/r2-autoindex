@@ -1,7 +1,7 @@
 {
   "name": "r2-serve",
   "version": "0.1.0-alpha.1",
-  "description": "Nginx-style static hosting for Cloudflare Workers and R2",
+  "description": "A static file server for Cloudflare R2",
   "keywords": [
     "autoindex",
     "cloudflare",

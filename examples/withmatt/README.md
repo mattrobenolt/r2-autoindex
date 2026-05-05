@@ -6,7 +6,7 @@ It intentionally uses the published npm package instead of the local source tree
 
 ## What it demonstrates
 
-- Generated autoindex listings.
+- Generated directory listings.
 - `index.html` directory index behavior under `/docs/`.
 - Hidden paths with `/hidden/`.
 - Basic Auth under `/private/`.

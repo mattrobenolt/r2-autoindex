@@ -32,7 +32,7 @@
   </head>
   <body>
     <h1>r2-serve</h1>
-    <p>Nginx-style directory listings for Cloudflare Workers and R2.</p>
+    <p>A static file server for Cloudflare R2.</p>
 
     <p>
       <a href="https://github.com/mattrobenolt/r2-serve">GitHub</a> ·
@@ -71,13 +71,13 @@ export default createR2ServeWorker&lt;Env&gt;({
 
     <h2>Cloudflare resources</h2>
     <p>
-      A deployment needs an R2 bucket, a Queue, R2 event notification rules for object
-      creates/deletes, and a Worker with the R2 binding plus Queue consumer.
+      The Terraform module can create the R2 bucket, Queue, R2 event notification rules, Worker, R2
+      binding, Queue consumer, and custom domain in one block.
     </p>
 
     <p>
-      The Terraform module in the repository can manage the whole standalone deployment using the
-      committed Worker bundle.
+      It uses the committed Worker bundle, so Terraform can deploy the standalone Worker without
+      running npm or Wrangler.
     </p>
   </body>
 </html>

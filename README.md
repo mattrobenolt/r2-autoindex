@@ -1,24 +1,98 @@
 # r2-serve
 
-Nginx-style static hosting for Cloudflare Workers and R2.
+A static file server for Cloudflare R2.
 
-`r2-serve` serves objects from R2 with static-site behavior layered on top: index files, generated directory listings, rewrites, redirects, headers, Basic Auth, custom error pages, byte ranges, and event-driven cache invalidation.
+R2 can expose public objects, but that is still mostly object hosting. `r2-serve` puts a small Cloudflare Worker in front of a bucket and adds the file-server behavior you usually want: directory listings, `index.html`, redirects, rewrites, headers, Basic Auth, custom error pages, byte ranges, and event-driven cache invalidation.
 
-The bucket remains the source of truth. Generated directory listing HTML is disposable cache stored under `.__autoindex__/`.
+Upload files to R2. Serve them over HTTP.
+
+Live demos: [r2-serve.withmatt.com](https://r2-serve.withmatt.com/) and [r2-serve-terraform.withmatt.com](https://r2-serve-terraform.withmatt.com/).
 
 ## Status
 
 Early, but functional. The package has not reached a stable `0.1.0` API yet.
 
+## Why not just use R2 public buckets?
+
+R2 public buckets are great when every URL maps directly to an object key. `r2-serve` is for when the bucket should behave more like a static file server.
+
+| Need                                                                       | R2 public bucket | `r2-serve` |
+| -------------------------------------------------------------------------- | ---------------- | ---------- |
+| Serve objects over HTTP                                                    | yes              | yes        |
+| Directory `index.html` handling                                            | limited          | yes        |
+| Browse directories                                                         | no               | yes        |
+| Hide internal paths                                                        | no               | yes        |
+| Redirects and rewrites                                                     | no               | yes        |
+| Per-path headers                                                           | no               | yes        |
+| Basic Auth                                                                 | no               | yes        |
+| Custom error pages                                                         | limited          | yes        |
+| Byte-range media serving                                                   | yes              | yes        |
+| One Terraform/OpenTofu block for bucket, Worker, Queue, events, and domain | no               | yes        |
+
+Think of native R2 public access as object hosting. Think of `r2-serve` as a small file server in front of the bucket.
+
+## Quick start: Terraform / OpenTofu
+
+The Terraform module is the easiest way to deploy a complete `r2-serve` site. One module block creates the R2 bucket, Queue, R2 event notifications, Worker script, R2 binding, Queue consumer, and custom Worker domain.
+
+```hcl
+module "files" {
+  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0-alpha.1"
+
+  account_id = var.account_id
+  zone_id    = cloudflare_zone.example_com.id
+  hostname   = "files.example.com"
+
+  bucket_name = "files-example-com"
+  worker_name = "files-example-com-r2-serve"
+  queue_name  = "files-example-com-r2-serve-events"
+
+  config = {
+    indexes = ["index.html", "index.htm"]
+
+    hidden = ["/hidden{/*path}"]
+
+    headers = [
+      {
+        source = "/{/*path}"
+        headers = [
+          { key = "x-content-type-options", value = "nosniff" }
+        ]
+      },
+      {
+        source = "/media{/*path}"
+        headers = [
+          { key = "cache-control", value = "public, max-age=3600" }
+        ]
+      }
+    ]
+
+    rewrites = {
+      fallback = [
+        {
+          source      = "/latest"
+          destination = "/releases/current/notes.txt"
+        }
+      ]
+    }
+  }
+}
+```
+
+In Terraform mode, Terraform owns the Worker script and Queue consumer. Do not also configure the same Worker/Queue consumer with Wrangler.
+
+The Worker code is the committed generated bundle in `terraform/worker.js`, so Terraform can deploy the module without running npm or Wrangler.
+
 ## Features
 
 - R2 object serving with MIME type inference.
 - Directory index files via `index.html` / `index.htm` or custom names.
-- Optional nginx-ish generated directory listings.
+- Generated directory listings for browsable buckets.
 - Lazy generated listings cached in R2.
 - R2 event notification invalidation via Cloudflare Queues.
 - HTTP byte-range support for media files.
-- `headers`, `redirects`, and `rewrites` using `path-to-regexp` v8 patterns or native `RegExp` sources in library mode.
+- `headers`, `redirects`, and `rewrites` using `path-to-regexp` v8 patterns.
+- Native `RegExp` route sources in library mode.
 - Basic Auth route rules with user-provided verification in library mode.
 - Declarative Basic Auth users in standalone JSON config.
 - Auth-protected responses default to `Cache-Control: private, no-store`.
@@ -26,6 +100,8 @@ Early, but functional. The package has not reached a stable `0.1.0` API yet.
 - `.__autoindex__/` is always internal: not served, not listed, and ignored by invalidation.
 
 ## Library usage
+
+Use the library when you want to own the Worker code yourself.
 
 ```ts
 import { createR2ServeWorker } from "r2-serve";
@@ -76,6 +152,8 @@ export default createR2ServeWorker<Env>({
 The auth verifier owns credential storage. Use Worker secrets, KV, D1, hardcoded test values, or anything else. The library only asks whether the request is allowed.
 
 ## Cloudflare setup with Wrangler
+
+Use Wrangler when you want a custom Worker project instead of the standalone Terraform module.
 
 You need:
 
@@ -140,7 +218,7 @@ A request for a directory first checks for configured index files. If no index o
 GET /docs/ -> .__autoindex__/indexes/docs%2F.html
 ```
 
-On cache miss, the Worker lists the immediate children of the R2 prefix, renders autoindex HTML, stores it under `.__autoindex__/`, and returns it.
+On cache miss, the Worker lists the immediate children of the R2 prefix, renders directory listing HTML, stores it under `.__autoindex__/`, and returns it.
 
 When R2 sends object create/delete notifications to the Queue, the Worker deletes cached listings for affected ancestor directories. The next request regenerates them.
 
@@ -162,63 +240,14 @@ If generated listings ever need a manual reset, delete the `.__autoindex__/` pre
 
 ## Examples
 
-The live kitchen-sink example is [r2-serve.withmatt.com](https://r2-serve.withmatt.com/).
+The live kitchen-sink example is [r2-serve.withmatt.com](https://r2-serve.withmatt.com/). It demonstrates directory listings, custom index files, rewrites, redirects, hidden paths, Basic Auth, custom error pages, headers, and byte-range media serving.
 
-Its Worker project lives in `examples/withmatt` and installs the published `r2-serve` package. It demonstrates directory listings, custom index files, rewrites, redirects, hidden paths, Basic Auth, custom error pages, headers, and byte-range media serving.
+The Terraform-managed example is [r2-serve-terraform.withmatt.com](https://r2-serve-terraform.withmatt.com/). It uses the published module from GitHub, not the local checkout.
 
-There is also `examples/library-basic`, a minimal example that imports the local source tree for package development.
+Example projects:
 
-## Terraform / OpenTofu
-
-The repository includes a standalone Terraform module in `terraform/`. It uses the committed generated Worker bundle at `terraform/worker.js`, so Terraform can deploy without running npm or Wrangler.
-
-Example:
-
-```hcl
-module "files" {
-  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0-alpha.0"
-
-  account_id  = var.account_id
-  zone_id     = cloudflare_zone.example_com.id
-  hostname    = "files.example.com"
-
-  bucket_name = "files-example-com"
-  worker_name = "files-example-com-r2-serve"
-  queue_name  = "files-example-com-r2-serve-events"
-
-  config = {
-    indexes = ["index.html", "index.htm"]
-
-    hidden = ["/hidden{/*path}"]
-
-    headers = [
-      {
-        source = "/{/*path}"
-        headers = [
-          { key = "x-content-type-options", value = "nosniff" }
-        ]
-      },
-      {
-        source = "/media{/*path}"
-        headers = [
-          { key = "cache-control", value = "public, max-age=3600" }
-        ]
-      }
-    ]
-
-    rewrites = {
-      fallback = [
-        {
-          source      = "/latest"
-          destination = "/releases/current/notes.txt"
-        }
-      ]
-    }
-  }
-}
-```
-
-In Terraform mode, Terraform owns the Worker script and Queue consumer. Do not also configure the same Worker/Queue consumer with Wrangler.
+- `examples/withmatt` installs the published `r2-serve` package.
+- `examples/library-basic` imports the local source tree for package development.
 
 ## Development
 
