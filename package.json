@@ -1,6 +1,6 @@
 {
   "name": "r2-serve",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "A static file server for Cloudflare R2",
   "keywords": [
     "autoindex",

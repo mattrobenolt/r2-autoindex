@@ -37,7 +37,7 @@ The Terraform module is the easiest way to deploy a complete `r2-serve` site. On
 
 ```hcl
 module "files" {
-  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0-alpha.1"
+  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0"
 
   account_id = var.account_id
   zone_id    = cloudflare_zone.example_com.id

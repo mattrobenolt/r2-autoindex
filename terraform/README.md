@@ -19,7 +19,7 @@ The Worker code is the committed `worker.js` bundle in this directory. It reads 
 
 ```hcl
 module "files" {
-  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0-alpha.1"
+  source = "github.com/mattrobenolt/r2-serve//terraform?ref=v0.1.0"
 
   account_id  = var.account_id
   zone_id     = cloudflare_zone.example_com.id
