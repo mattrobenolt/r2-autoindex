@@ -1,7 +1,7 @@
-export { createAutoIndexWorker } from "./worker";
+export { createR2ServeWorker } from "./worker";
 export type {
   AuthRule,
-  AutoIndexConfig,
+  R2ServeConfig,
   ErrorPage,
   HeaderRule,
   RedirectRule,

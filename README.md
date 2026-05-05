@@ -28,14 +28,14 @@ Early, but functional. The package has not reached a stable `0.1.0` API yet.
 ## Library usage
 
 ```ts
-import { createAutoIndexWorker } from "r2-serve";
+import { createR2ServeWorker } from "r2-serve";
 
 export interface Env {
   BUCKET: R2Bucket;
   PRIVATE_PASSWORD: string;
 }
 
-export default createAutoIndexWorker<Env>({
+export default createR2ServeWorker<Env>({
   bucket: (env) => env.BUCKET,
 
   indexes: ["index.html", "index.htm"],

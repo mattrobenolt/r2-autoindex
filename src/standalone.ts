@@ -1,6 +1,6 @@
-import { createAutoIndexWorker } from "./lib/worker";
+import { createR2ServeWorker } from "./lib/worker";
 import type {
-  AutoIndexConfig,
+  R2ServeConfig,
   ErrorPage,
   HeaderRule,
   RedirectRule,
@@ -10,7 +10,7 @@ import type {
 
 export interface Env {
   BUCKET: R2Bucket;
-  AUTO_INDEX_CONFIG?: StandaloneConfig | string;
+  R2_SERVE_CONFIG?: StandaloneConfig | string;
 }
 
 type R2Event = {
@@ -83,10 +83,10 @@ export default {
 } satisfies ExportedHandler<Env, R2Event>;
 
 function getWorker(env: Env): ExportedHandler<Env, R2Event> {
-  const config = parseConfig(env.AUTO_INDEX_CONFIG);
+  const config = parseConfig(env.R2_SERVE_CONFIG);
   const key = JSON.stringify(config);
   if (!worker || workerConfigKey !== key) {
-    worker = createAutoIndexWorker<Env>(toAutoIndexConfig(config));
+    worker = createR2ServeWorker<Env>(toR2ServeConfig(config));
     workerConfigKey = key;
   }
   return worker;
@@ -98,7 +98,7 @@ function parseConfig(input: StandaloneConfig | string | undefined): StandaloneCo
   return { ...DEFAULT_CONFIG, ...config };
 }
 
-function toAutoIndexConfig(config: StandaloneConfig): AutoIndexConfig<Env> {
+function toR2ServeConfig(config: StandaloneConfig): R2ServeConfig<Env> {
   return {
     bucket: (env) => env.BUCKET,
     internalPrefix: config.internalPrefix,

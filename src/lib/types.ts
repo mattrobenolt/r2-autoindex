@@ -43,7 +43,7 @@ export type ErrorPage = {
   headers?: Record<string, string>;
 };
 
-export type AutoIndexConfig<Env = unknown> = {
+export type R2ServeConfig<Env = unknown> = {
   bucket?: keyof Env | ((env: Env) => R2Bucket);
   internalPrefix?: string;
   indexes?: string[];

@@ -2,7 +2,7 @@ import { lookup } from "mime-types";
 import { compile, match } from "path-to-regexp";
 import type {
   AuthRule,
-  AutoIndexConfig,
+  R2ServeConfig,
   ErrorPage,
   HeaderRule,
   RedirectRule,
@@ -47,8 +47,8 @@ type RouteConfig<Env = unknown> = {
 const DEFAULT_INTERNAL_PREFIX = ".__autoindex__/";
 const HTML_TYPE = "text/html; charset=utf-8";
 
-export function createAutoIndexWorker<Env = { BUCKET: R2Bucket }>(
-  config: AutoIndexConfig<Env> = {},
+export function createR2ServeWorker<Env = { BUCKET: R2Bucket }>(
+  config: R2ServeConfig<Env> = {},
 ): ExportedHandler<Env, R2Event> {
   let configPromise: Promise<RouteConfig<Env>> | undefined;
 
@@ -471,7 +471,7 @@ function applyNoStore(response: Response, enabled: boolean): Response {
   });
 }
 
-async function buildRouteConfig<Env>(config: AutoIndexConfig<Env>): Promise<RouteConfig<Env>> {
+async function buildRouteConfig<Env>(config: R2ServeConfig<Env>): Promise<RouteConfig<Env>> {
   const rewrites = normalizeRewrites((await config.rewrites?.()) ?? []);
   return {
     indexes: config.indexes ?? ["index.html", "index.htm"],
@@ -524,7 +524,7 @@ function unauthorized(realm = "restricted"): Response {
   });
 }
 
-function getBucket<Env>(env: Env, config: AutoIndexConfig<Env>): R2Bucket {
+function getBucket<Env>(env: Env, config: R2ServeConfig<Env>): R2Bucket {
   if (typeof config.bucket === "function") return config.bucket(env);
   const binding = (config.bucket ?? "BUCKET") as keyof Env;
   const bucket = env[binding];

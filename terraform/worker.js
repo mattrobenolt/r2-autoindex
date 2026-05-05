@@ -9987,7 +9987,7 @@ var import_mime_types = __toESM(require_mime_types(), 1);
 var import_path_to_regexp = __toESM(require_dist(), 1);
 var DEFAULT_INTERNAL_PREFIX = ".__autoindex__/";
 var HTML_TYPE = "text/html; charset=utf-8";
-function createAutoIndexWorker(config = {}) {
+function createR2ServeWorker(config = {}) {
   let configPromise;
   function routeConfig() {
     configPromise ??= buildRouteConfig(config);
@@ -10040,7 +10040,7 @@ function createAutoIndexWorker(config = {}) {
     },
   };
 }
-__name(createAutoIndexWorker, "createAutoIndexWorker");
+__name(createR2ServeWorker, "createR2ServeWorker");
 async function routeRequest(request, env, bucket, internalPrefix, routes, path, auth) {
   if (isInternalKey(path.key, internalPrefix) || matchesAny(routes.denied, path.pathname)) {
     return new Response("Not Found", { status: 404 });
@@ -10512,10 +10512,10 @@ var standalone_default = {
   },
 };
 function getWorker(env) {
-  const config = parseConfig(env.AUTO_INDEX_CONFIG);
+  const config = parseConfig(env.R2_SERVE_CONFIG);
   const key = JSON.stringify(config);
   if (!worker || workerConfigKey !== key) {
-    worker = createAutoIndexWorker(toAutoIndexConfig(config));
+    worker = createR2ServeWorker(toR2ServeConfig(config));
     workerConfigKey = key;
   }
   return worker;
@@ -10527,7 +10527,7 @@ function parseConfig(input) {
   return { ...DEFAULT_CONFIG, ...config };
 }
 __name(parseConfig, "parseConfig");
-function toAutoIndexConfig(config) {
+function toR2ServeConfig(config) {
   return {
     bucket: /* @__PURE__ */ __name((env) => env.BUCKET, "bucket"),
     internalPrefix: config.internalPrefix,
@@ -10549,7 +10549,7 @@ function toAutoIndexConfig(config) {
     rewrites: config.rewrites ? async () => config.rewrites : void 0,
   };
 }
-__name(toAutoIndexConfig, "toAutoIndexConfig");
+__name(toR2ServeConfig, "toR2ServeConfig");
 async function sha256Hex(value) {
   const bytes = new TextEncoder().encode(value);
   const hash = await crypto.subtle.digest("SHA-256", bytes);

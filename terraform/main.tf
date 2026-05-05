@@ -33,7 +33,7 @@ resource "cloudflare_workers_script" "worker" {
       bucket_name = cloudflare_r2_bucket.bucket.name
     },
     {
-      name = "AUTO_INDEX_CONFIG"
+      name = "R2_SERVE_CONFIG"
       type = "json"
       json = jsonencode(var.config)
     },

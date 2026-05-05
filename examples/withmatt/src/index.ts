@@ -1,4 +1,4 @@
-import { createAutoIndexWorker } from "r2-serve";
+import { createR2ServeWorker } from "r2-serve";
 
 export interface Env {
   BUCKET: R2Bucket;
@@ -19,7 +19,7 @@ const errorPage = `<!doctype html>
 <p><a href="/">Back to the listing</a></p>
 `;
 
-export default createAutoIndexWorker<Env>({
+export default createR2ServeWorker<Env>({
   bucket: (env) => env.BUCKET,
   indexes: ["index.html", "index.htm"],
 

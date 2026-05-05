@@ -11,7 +11,7 @@ This module creates:
 - R2 event notification rules,
 - optionally a Worker custom domain.
 
-The Worker code is the committed `worker.js` bundle in this directory. It reads JSON-compatible configuration from the `AUTO_INDEX_CONFIG` Worker binding.
+The Worker code is the committed `worker.js` bundle in this directory. It reads JSON-compatible configuration from the `R2_SERVE_CONFIG` Worker binding.
 
 ## Example
 
@@ -24,8 +24,8 @@ module "files" {
   hostname    = "files.example.com"
 
   bucket_name = "files-example-com"
-  worker_name = "files-example-com-autoindex"
-  queue_name  = "files-example-com-autoindex-events"
+  worker_name = "files-example-com-r2-serve"
+  queue_name  = "files-example-com-r2-serve-events"
 
   config = {
     indexes = ["index.html", "index.htm"]

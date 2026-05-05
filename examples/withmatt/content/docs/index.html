@@ -58,13 +58,13 @@
     </ul>
 
     <h2>Minimal Worker</h2>
-    <pre><code>import { createAutoIndexWorker } from "r2-serve";
+    <pre><code>import { createR2ServeWorker } from "r2-serve";
 
 export interface Env {
   BUCKET: R2Bucket;
 }
 
-export default createAutoIndexWorker&lt;Env&gt;({
+export default createR2ServeWorker&lt;Env&gt;({
   bucket: (env) =&gt; env.BUCKET,
   indexes: ["index.html", "index.htm"],
 });</code></pre>

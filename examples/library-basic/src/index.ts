@@ -1,11 +1,11 @@
-import { createAutoIndexWorker } from "../../src";
+import { createR2ServeWorker } from "../../src";
 
 export interface Env {
   BUCKET: R2Bucket;
   PRIVATE_PASSWORD?: string;
 }
 
-export default createAutoIndexWorker<Env>({
+export default createR2ServeWorker<Env>({
   bucket: (env) => env.BUCKET,
 
   indexes: ["index.html", "index.htm"],
